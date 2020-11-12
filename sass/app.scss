@@ -1,0 +1,17 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+li {
+    list-style: none;
+}
+
+@import './calendar/sheet.scss'
