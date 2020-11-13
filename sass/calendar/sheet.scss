@@ -1,3 +1,5 @@
+$calendar_width: 370px; 
+
 #calendar {
     width: 100%;
     height: 100%;
@@ -9,17 +11,77 @@
         display: flex;
         justify-content: flex-end;
         > div {
+            display: flex;
+            flex-direction: column;
             margin-right: 58px;
-            width: 370px;
+            width: $calendar_width;
             height: 320px;
             #year {
                 display: flex;
-                justify-content: space-around;
+                justify-content: space-between;
+                .prev {
+                    margin-left: 20px;
+                }
+                .next {
+                    margin-right: 20px;
+                }
             }
             #week {
                 margin: 20px 0 20px 0 ;
                 display: flex;
                 justify-content: space-around;
+            }
+            #day {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                ul {
+                    width: 100%;
+                    display: flex;
+                    li {
+                        text-align: center;
+                       div {
+                           margin-top: 10px;
+                           margin-bottom: 10px;
+                           width: $calendar_width / 7;
+                           div {
+                                width: auto;
+                                position: absolute;
+                                display: flex;
+                                position: absolute;
+                                transform: translate(22px, -9px);
+                               p {
+                                   margin-right: 3px;
+                                   width: 7px;
+                                   border-radius: 50%;
+                                   height: 7px;
+                                   background-color: green;
+                               }
+                           }
+                       }
+                    }
+                    .has-event {
+                        cursor: pointer;
+                    }
+                    .weeked {
+                        background-color: grey;
+                    }
+                    .weeked:first-of-type {
+                      border-top-left-radius: 500px;
+                      border-bottom-left-radius: 500px;
+                    }
+                    .weeked:last-of-type {
+                        border-top-right-radius: 500px;
+                        border-bottom-right-radius: 500px ;
+                    }
+                    .current {
+                        color: blue;
+                    }
+                    .other {
+                        color: red;
+                    }
+                }
             }
         }
     }
