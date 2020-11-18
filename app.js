@@ -9,7 +9,10 @@ class Calendar extends Date {
             now: new Date()
         }
         this.state.DOMEvent.forEach(ev => {
-            this.state.events.push(ev.dataset.date)
+            this.state.events.push({
+                date: ev.dataset.date,
+                type: ev.dataset.type
+            })
         })
         this.setUpdate()
     }
@@ -60,9 +63,36 @@ class Calendar extends Date {
 
     // credential 
     isCurrentWeek(day, month, years) {
-        let startWeek = (this.getDate() - this.getDay()) + 1
-        let endWeek = startWeek + 6
-        return (day >= startWeek && day <= endWeek && month === this.state.now.getMonth() && years === this.state.now.getFullYear()) ? true : false
+        // date form the cell
+        let date = new Date(years, month, day)
+        // now reference
+        let now = new Date()
+        
+        now.setHours(0,0,0,0)
+        
+        let firstDay = new Date(now.getFullYear(), now.getMonth(), (now.getDate() - this.getFormattedDay(now.getDay())))
+        let lastDay = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 6)
+
+        console.log(lastDay)
+
+        if(date.getTime() >= firstDay.getTime() && date.getTime() <= lastDay.getTime()) {
+            return true
+        }
+        //console.log(day + '/' + month + '/' + years)
+       return false
+    }
+
+    isDay(day, month, years) {
+          // date form the cell
+          let date = new Date(years, month, day)
+          // now reference
+          let now = new Date()
+          now.setHours(0,0,0,0)
+
+          if(date.getTime() === now.getTime()) {
+              return true
+          }
+          return false
     }
     
     // builder
@@ -103,14 +133,17 @@ class Calendar extends Date {
     }
 
     buildGrid() { 
+        // reset the grid
         this.state.DOMDays.innerHTML = '' 
         let currentMonth = {
             start: this.getStartOfMonth(),
             end: this.getEndOfMonth()
         }
+        // li container (array)
         let lis = []
         let prevMonth = this.getEndOfMonth(this.getMonth() - 1) 
 
+        // number of cell who need to be created for fill the grid
         let DiffPrev = prevMonth.posInMonth - (currentMonth.start.posInWeek - 1)
         let DiffLis = []
         while(DiffPrev <= prevMonth.posInMonth) {
@@ -123,21 +156,29 @@ class Calendar extends Date {
                 lis.push(li)
             })
         }
+        // generate li for the current month ex: 0-31 (HTMLLIELMENT)
         this.buildMonth(currentMonth.end.posInMonth).forEach(li => {
             lis.push(li)
         })
+        // ul container
         let grid = []
+        // number of item missed
         let p = 0
         for(let i = 0; i < 6; i++) {
             let ul = document.createElement('ul')
             grid.push(ul)
             for(let e = 0; e < 7; e++) {
+                // determine the number of item missing in grid
                 if(lis[p] !== undefined) 
                     grid[i].appendChild(lis[p])
                 p++;
             }
         }
+
+        // fix the missing cell in grid
         this.buildEnd(grid, this.getStartOfMonth(this.getMonth() + 1))
+
+        // appending the grid to the DOM element
         grid.forEach(ul => {
             this.state.DOMDays.appendChild(ul)
         })
@@ -145,32 +186,61 @@ class Calendar extends Date {
     }   
     
     // creator
-    createCell(isMonths, content, months) {    
+    createCell(isMonths, day, months) {  
+        // cell  
         let li = document.createElement('li')
-        li.className = (isMonths) ? 'current' : 'other'
-        if(this.isCurrentWeek(content, months, this.getFullYear()) === true) {
-            li.className = li.className + ' weeked'
-        }
+        li.className = (isMonths) ? 'c-m' : 'o-m'
+
+        // cell container
         let div = document.createElement('div')
-        let pills = document.createElement('div')
+        // day number
         let p = document.createElement('p')
-        p.innerHTML = content
+        // pill container 
+        let pills = document.createElement('div')
+        
+        p.innerHTML = day
         div.appendChild(p)
         this.state.events.forEach((ev, index) => {
-            let obj = ev.split('/')
-            if(parseInt(obj[0]) === parseInt(content) && (parseInt(obj[1]) - 1) === parseInt(months) && parseInt(obj[2]) === parseInt(this.getFullYear())) {
-                let o = document.createElement('p')
-                li.className = li.className + ' has-event'
-                pills.appendChild(o)
+            // get array of the string slitted at /
+            let obj = ev.date.split('/')
+            if(obj[0] == day && obj[1] - 1 == months && obj[2] == this.getFullYear()) {
+                // pill
+                let pill = document.createElement('p')
+                pill.setAttribute('style', ev.type)
+                // add class for has event
+                li.className = (!li.className.includes('has-event')) ? li.className + ' has-event' : li.className + '';
+                // add to pill container
+                pills.appendChild(pill)
+                // add to cell container
                 div.appendChild(pills)
+
+                // assessor of this
                 let _this = this
+                // when click on has-event
                 li.addEventListener('click', function(e) {
-                    let parent = _this.state.DOMEvent[index].parentElement
-                    console.log(parent)
-                    
+                    let height = 0
+                    let parent = _this.state.DOMEvent[index]
+                    for(let i = 0; i < index; i++) {
+                       height +=  _this.state.DOMEvent[i].scrollHeight
+                    }
+                    _this.state.DOMEvent[index].parentElement.scrollTo({
+                        top: height,
+                        left: 0,
+                        behavior: 'smooth'
+                      })
+                    _this.state.DOMEvent[index].className = "active"
+                    setTimeout(() => {
+                        _this.state.DOMEvent[index].removeAttribute('class')
+                    }, 1000);
                 })
             } 
         })
+
+        // check if day is in current week
+        li.className = li.className + ((this.isCurrentWeek(day, months, this.getFullYear())) ? ' c-w' : '');
+        // if is today
+        li.className = li.className + ((this.isDay(day, months, this.getFullYear()) ? ' today' : ''));
+        // add cell container to cell
         li.appendChild(div)
         return li
     }
@@ -193,3 +263,4 @@ class Calendar extends Date {
 
 
 let date = new Calendar()
+console.log(date)

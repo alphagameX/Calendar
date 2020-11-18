@@ -64,23 +64,24 @@ $calendar_width: 370px;
                     .has-event {
                         cursor: pointer;
                     }
-                    .weeked {
+                    .c-w {
                         background-color: grey;
                     }
-                    .weeked:first-of-type {
+                    .c-w:first-of-type { 
                       border-top-left-radius: 500px;
                       border-bottom-left-radius: 500px;
                     }
-                    .weeked:last-of-type {
+                    .c-w:last-of-type {
                         border-top-right-radius: 500px;
                         border-bottom-right-radius: 500px ;
                     }
-                    .current {
+                    .c-m {
                         color: blue;
                     }
-                    .other {
+                    .o-m {
                         color: red;
                     }
+                    
                 }
             }
         }
@@ -93,6 +94,7 @@ $calendar_width: 370px;
             li {
                 margin-left: 10px ;
             }
+            
         }
 
         .group{
@@ -102,6 +104,7 @@ $calendar_width: 370px;
             li {
                 margin-top: 10px;
                 display: flex;
+                width: fit-content;
                 div {
                     margin: 15px 0 15px 15px;
                     display: flex;
@@ -109,6 +112,14 @@ $calendar_width: 370px;
                     justify-content: space-between;
                 }
             }
+            .active {
+                animation: pulse 1s infinite;
+            }
         }
     }
+}
+
+
+@keyframes pulse {
+    
 }
